@@ -2,7 +2,7 @@
 Summary:        First stage UEFI bootloader
 Name:           shim-unsigned-x64
 Version:        15.4
-Release:        1%{?dist}
+Release:        2%{?dist}
 License:        BSD
 Vendor:         Microsoft Corporation
 Distribution:   Mariner
@@ -10,6 +10,7 @@ URL:            https://github.com/rhboot/shim
 Source0:        https://github.com/rhboot/shim/releases/download/%{version}/shim-%{version}.tar.bz2
 Source1:        sbat.csv.in
 Source100:      cbl-mariner-ca-20210127.der
+Patch0:         add-logging.patch
 BuildRequires:  dos2unix
 BuildRequires:  vim-extra
 ExclusiveArch:  x86_64

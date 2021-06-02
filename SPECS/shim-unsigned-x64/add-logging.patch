@@ -1,0 +1,74 @@
+diff --git a/pe.c b/pe.c
+index 365e32a..0b65969 100644
+--- a/pe.c
++++ b/pe.c
+@@ -913,6 +913,8 @@ handle_image (void *data, unsigned int datasize,
+ 				   sha1hash);
+ 	if (EFI_ERROR(efi_status))
+ 		return efi_status;
++	
++	console_print(L"Debug: handle_image data value: %d, size: %d\n", (UINTN)data, datasize);
+ 
+ 	/* Measure the binary into the TPM */
+ #ifdef REQUIRE_TPM
+diff --git a/shim.c b/shim.c
+index c5cfbb8..206b716 100644
+--- a/shim.c
++++ b/shim.c
+@@ -619,6 +619,8 @@ verify_buffer (char *data, int datasize,
+ 		return ret_efi_status;
+ 	}
+ 
++	console_print(L"Debug: get to after checking denylist\n");
++
+ 	/*
+ 	 * Check whether the binary is authorized by hash in any of the
+ 	 * firmware databases
+@@ -640,13 +642,18 @@ verify_buffer (char *data, int datasize,
+ 		return ret_efi_status;
+ 	}
+ 
++	console_print(L"Debug: get to after checking allow list\n");
++
++
+ 	if (context->SecDir->Size == 0) {
+ 		dprint(L"No signatures found\n");
++		console_print(L"Debug: No signatures found\n");
+ 		return EFI_SECURITY_VIOLATION;
+ 	}
+ 
+ 	if (context->SecDir->Size >= size) {
+ 		perror(L"Certificate Database size is too large\n");
++		console_print(L"Certificate Database size is too large\n");
+ 		return EFI_INVALID_PARAMETER;
+ 	}
+ 
+@@ -664,17 +671,20 @@ verify_buffer (char *data, int datasize,
+ 		     + sizeof(sig->Hdr.dwLength);
+ 		if (sz > context->SecDir->Size) {
+ 			perror(L"Certificate size is too large for secruity database");
++			console_print(L"Certificate too large error 1\n");
+ 			return EFI_INVALID_PARAMETER;
+ 		}
+ 
+ 		sz = sig->Hdr.dwLength;
+ 		if (sz > context->SecDir->Size - offset) {
+ 			perror(L"Certificate size is too large for secruity database");
++			console_print(L"Certificate too large error 2\n");
+ 			return EFI_INVALID_PARAMETER;
+ 		}
+ 
+ 		if (sz < sizeof(sig->Hdr)) {
+ 			perror(L"Certificate size is too small for certificate data");
++			console_print(L"Certificate too large error 3\n");
+ 			return EFI_INVALID_PARAMETER;
+ 		}
+ 
+@@ -704,6 +714,7 @@ verify_buffer (char *data, int datasize,
+ 
+ 	if (ret_efi_status != EFI_SUCCESS) {
+ 		dprint(L"Binary is not authorized\n");
++		console_print(L"Binary is not authorized\n");
+ 		PrintErrors();
+ 		ClearErrors();
+ 		crypterr(EFI_SECURITY_VIOLATION);
